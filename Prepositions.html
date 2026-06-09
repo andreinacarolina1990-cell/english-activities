@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Practice - At, On, In</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    background:#f5f5f5;
+    padding:20px;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+    background:white;
+    border-radius:12px;
+    padding:25px;
+    box-shadow:0 0 10px rgba(0,0,0,.15);
+}
+
+h1{
+    color:#9B111E;
+    margin-bottom:10px;
+}
+
+.instructions{
+    background:#E9F5E1;
+    border-left:6px solid #7DBE3C;
+    padding:12px;
+    margin-bottom:20px;
+    border-radius:6px;
+}
+
+.section{
+    margin-top:25px;
+}
+
+h2{
+    color:#B00020;
+    margin-bottom:15px;
+}
+
+.question{
+    margin-bottom:18px;
+    line-height:2;
+}
+
+input{
+    width:70px;
+    padding:6px;
+    text-align:center;
+    border:2px solid #999;
+    border-radius:5px;
+    font-size:16px;
+    text-transform:lowercase;
+}
+
+.feedback{
+    margin-top:4px;
+    font-size:14px;
+    font-weight:bold;
+}
+
+.correct{
+    color:#1b7d29;
+}
+
+.incorrect{
+    color:#B00020;
+}
+
+button{
+    margin-top:25px;
+    padding:12px 28px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+    background:#7DBE3C;
+    color:white;
+    transition:.3s;
+}
+
+button:hover{
+    opacity:.9;
+}
+
+#result{
+    margin-top:20px;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.explanation{
+    font-size:13px;
+    color:#555;
+    margin-top:3px;
+}
+
+@media(max-width:700px){
+
+.container{
+padding:15px;
+}
+
+input{
+width:60px;
+}
+
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>At, On or In?</h1>
+
+<div class="instructions">
+
+<strong>Instructions:</strong><br><br>
+
+Complete each sentence using <strong>at</strong>, <strong>on</strong> or <strong>in</strong>. These examples are based on common workplace situations. When you finish, click <strong>Check Answers</strong> to receive feedback and explanations.
+
+</div>
+
+<div class="section">
+
+<h2>Fill in the blanks</h2>
+
+<div id="quiz"></div>
+
+<button onclick="checkAnswers()">Check Answers</button>
+
+<div id="result"></div>
+
+</div>
+
+</div>
+
+<script>
+
+const questions=[
+
+{
+text:"1. The team meeting starts ___ 9:00 a.m.",
+answer:"at",
+explanation:"Use <b>at</b> for exact times."
+},
+
+{
+text:"2. We have training ___ Monday morning.",
+answer:"on",
+explanation:"Use <b>on</b> for days and specific dates."
+},
+
+{
+text:"3. The company was founded ___ 2015.",
+answer:"in",
+explanation:"Use <b>in</b> for years."
+},
+
+{
+text:"4. Please wait ___ the reception desk.",
+answer:"at",
+explanation:"Use <b>at</b> for specific locations or points."
+},
+
+{
+text:"5. The presentation is displayed ___ the screen.",
+answer:"on",
+explanation:"Use <b>on</b> for surfaces."
+},
+
+{
+text:"6. The documents are ___ the folder.",
+answer:"in",
+explanation:"Use <b>in</b> when something is inside a container."
+},
+
+{
+text:"7. Our annual conference is ___ October.",
+answer:"in",
+explanation:"Use <b>in</b> for months."
+},
+
+{
+text:"8. Let's meet ___ the cafeteria.",
+answer:"at",
+explanation:"Use <b>at</b> for meeting points."
+},
+
+{
+text:"9. The workshop is ___ Friday afternoon.",
+answer:"on",
+explanation:"Use <b>on</b> for a specific day."
+},
+
+{
+text:"10. Most employees work remotely ___ the afternoon.",
+answer:"in",
+explanation:"Use <b>in</b> with parts of the day (morning, afternoon, evening)."
+}
+
+];
+
+const quiz=document.getElementById("quiz");
+
+questions.forEach((q,i)=>{
+
+quiz.innerHTML+=`
+
+<div class="question">
+
+${q.text.replace("___",`<input id="q${i}">`)}
+
+<div class="feedback" id="f${i}"></div>
+
+<div class="explanation" id="e${i}"></div>
+
+</div>
+
+`;
+
+});
+
+function checkAnswers(){
+
+let score=0;
+
+questions.forEach((q,i)=>{
+
+let user=document.getElementById("q"+i).value.trim().toLowerCase();
+
+let feedback=document.getElementById("f"+i);
+
+let exp=document.getElementById("e"+i);
+
+if(user===q.answer){
+
+feedback.innerHTML="✔ Correct!";
+feedback.className="feedback correct";
+exp.innerHTML=q.explanation;
+score++;
+
+}
+
+else{
+
+feedback.innerHTML=`✘ Incorrect. Correct answer: <b>${q.answer}</b>`;
+feedback.className="feedback incorrect";
+exp.innerHTML=q.explanation;
+
+}
+
+});
+
+document.getElementById("result").innerHTML=`Score: ${score} / ${questions.length}`;
+
+}
+
+</script>
+
+</body>
+</html>
