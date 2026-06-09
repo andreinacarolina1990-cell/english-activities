@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find the Mistake - At, On, In</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+background:#f4f4f4;
+padding:20px;
+}
+
+.container{
+max-width:1000px;
+margin:auto;
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 2px 10px rgba(0,0,0,.15);
+}
+
+h1{
+color:#9B111E;
+margin-bottom:10px;
+}
+
+.instructions{
+background:#E9F5E1;
+border-left:6px solid #7DBE3C;
+padding:15px;
+margin-bottom:25px;
+border-radius:8px;
+}
+
+.question{
+margin-bottom:22px;
+padding-bottom:15px;
+border-bottom:1px solid #ddd;
+}
+
+.sentence{
+font-size:18px;
+margin-bottom:10px;
+}
+
+select{
+padding:8px;
+font-size:15px;
+border-radius:6px;
+border:2px solid #999;
+}
+
+.feedback{
+margin-top:8px;
+font-weight:bold;
+}
+
+.correct{
+color:#1b7d29;
+}
+
+.incorrect{
+color:#B00020;
+}
+
+.explanation{
+margin-top:5px;
+font-size:14px;
+color:#555;
+}
+
+button{
+
+margin-top:20px;
+padding:12px 30px;
+background:#7DBE3C;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-size:16px;
+
+}
+
+button:hover{
+
+opacity:.9;
+
+}
+
+#score{
+
+margin-top:25px;
+font-size:22px;
+font-weight:bold;
+
+}
+
+@media(max-width:700px){
+
+.sentence{
+
+font-size:16px;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Find the Mistake</h1>
+
+<div class="instructions">
+
+<strong>Instructions</strong><br><br>
+
+Each sentence contains an incorrect preposition (<strong>at, on</strong> or <strong>in</strong>). Select the correct preposition from the list and click <strong>Check Answers</strong>. You will receive immediate feedback and a brief explanation.
+
+</div>
+
+<div id="quiz"></div>
+
+<button onclick="checkAnswers()">Check Answers</button>
+
+<div id="score"></div>
+
+</div>
+
+<script>
+
+const questions=[
+
+{
+sentence:"1. The meeting starts <b>in</b> 8:00 a.m.",
+correct:"at",
+explanation:"Use <b>at</b> for specific times."
+},
+
+{
+sentence:"2. The reports are <b>at</b> the folder.",
+correct:"in",
+explanation:"Use <b>in</b> when something is inside a container."
+},
+
+{
+sentence:"3. We have English class <b>in</b> Monday.",
+correct:"on",
+explanation:"Use <b>on</b> for days."
+},
+
+{
+sentence:"4. The logo appears <b>in</b> the screen.",
+correct:"on",
+explanation:"Use <b>on</b> for surfaces."
+},
+
+{
+sentence:"5. The company opened <b>on</b> 2022.",
+correct:"in",
+explanation:"Use <b>in</b> for years."
+},
+
+{
+sentence:"6. Please wait <b>on</b> reception.",
+correct:"at",
+explanation:"Use <b>at</b> for specific places."
+},
+
+{
+sentence:"7. The training is <b>at</b> Friday afternoon.",
+correct:"on",
+explanation:"Use <b>on</b> for days and dates."
+},
+
+{
+sentence:"8. The manager arrived <b>in</b> 7:30 a.m.",
+correct:"at",
+explanation:"Use <b>at</b> for exact times."
+},
+
+{
+sentence:"9. Our busiest season is <b>on</b> summer.",
+correct:"in",
+explanation:"Use <b>in</b> for seasons."
+},
+
+{
+sentence:"10. The berries are <b>on</b> the box.",
+correct:"in",
+explanation:"Use <b>in</b> because they are inside the box."
+}
+
+];
+
+const quiz=document.getElementById("quiz");
+
+questions.forEach((q,i)=>{
+
+quiz.innerHTML+=`
+
+<div class="question">
+
+<div class="sentence">${q.sentence}</div>
+
+<label>Correct preposition:</label>
+
+<select id="q${i}">
+<option value="">Choose...</option>
+<option>at</option>
+<option>on</option>
+<option>in</option>
+</select>
+
+<div class="feedback" id="f${i}"></div>
+
+<div class="explanation" id="e${i}"></div>
+
+</div>
+
+`;
+
+});
+
+function checkAnswers(){
+
+let total=0;
+
+questions.forEach((q,i)=>{
+
+const user=document.getElementById("q"+i).value;
+
+const fb=document.getElementById("f"+i);
+
+const ex=document.getElementById("e"+i);
+
+if(user===q.correct){
+
+fb.innerHTML="✔ Correct!";
+fb.className="feedback correct";
+ex.innerHTML=q.explanation;
+total++;
+
+}
+
+else{
+
+fb.innerHTML=`✘ Incorrect. The correct answer is <b>${q.correct}</b>.`;
+fb.className="feedback incorrect";
+ex.innerHTML=q.explanation;
+
+}
+
+});
+
+document.getElementById("score").innerHTML=`Final Score: ${total} / ${questions.length}`;
+
+}
+
+</script>
+
+</body>
+</html>
