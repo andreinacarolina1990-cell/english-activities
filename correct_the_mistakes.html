@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Correct the Mistakes</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f5f6fa;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 36px 40px;
+    max-width: 720px;
+    width: 100%;
+    box-shadow: 0 4px 24px rgba(36,36,125,0.10);
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+    border-bottom: 2px solid #f0f0f8;
+    padding-bottom: 20px;
+  }
+
+  .header-icon {
+    background: #24247d;
+    color: #fff;
+    border-radius: 10px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .header-text h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #24247d;
+    letter-spacing: -0.3px;
+  }
+
+  .header-text p {
+    font-size: 13px;
+    color: #888;
+    margin-top: 2px;
+  }
+
+  .progress-bar-wrap {
+    background: #eeeef8;
+    border-radius: 99px;
+    height: 6px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: linear-gradient(90deg, #24247d, #ff0343);
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+
+  .item {
+    background: #f8f8fd;
+    border: 1.5px solid #e0e0f0;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    transition: border-color 0.25s, background 0.25s;
+  }
+
+  .item.correct {
+    border-color: #22c55e;
+    background: #f0fdf4;
+  }
+
+  .item.incorrect {
+    border-color: #ff0343;
+    background: #fff5f7;
+  }
+
+  .item-number {
+    font-size: 11px;
+    font-weight: 700;
+    color: #24247d;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  .wrong-sentence {
+    font-size: 15px;
+    color: #444;
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+
+  .wrong-part {
+    text-decoration: line-through;
+    color: #ff0343;
+    font-weight: 600;
+  }
+
+  .correction-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .sentence-prefix {
+    font-size: 14px;
+    color: #555;
+    flex-shrink: 0;
+  }
+
+  .dropdown-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    background: #ffffff;
+    border: 1.5px solid #c0c0e0;
+    border-radius: 8px;
+    padding: 7px 36px 7px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #333;
+    cursor: pointer;
+    min-width: 160px;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  select:focus { border-color: #24247d; }
+  select:disabled { opacity: 0.6; cursor: default; }
+
+  .dropdown-wrap::after {
+    content: '▾';
+    position: absolute;
+    right: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    color: #888;
+    pointer-events: none;
+  }
+
+  .feedback-icon {
+    font-size: 18px;
+    display: none;
+    flex-shrink: 0;
+  }
+
+  .feedback-msg {
+    font-size: 12px;
+    font-weight: 600;
+    display: none;
+    flex-shrink: 0;
+  }
+
+  .item.correct .feedback-icon,
+  .item.correct .feedback-msg,
+  .item.incorrect .feedback-icon,
+  .item.incorrect .feedback-msg { display: inline; }
+
+  .item.correct .feedback-msg { color: #16a34a; }
+  .item.incorrect .feedback-msg { color: #ff0343; }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 11px 28px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.2s, transform 0.1s;
+    font-family: inherit;
+  }
+
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.5; cursor: default; }
+
+  .btn-primary {
+    background: #24247d;
+    color: #fff;
+  }
+
+  .btn-primary:hover:not(:disabled) { opacity: 0.88; }
+
+  .btn-secondary {
+    background: #f0f0f8;
+    color: #24247d;
+    border: 1.5px solid #d0d0ea;
+  }
+
+  .btn-secondary:hover { background: #e4e4f4; }
+
+  .result-panel {
+    display: none;
+    margin-top: 24px;
+    background: #f0f0fa;
+    border-radius: 12px;
+    padding: 20px 24px;
+    text-align: center;
+    border: 1.5px solid #d0d0ea;
+  }
+
+  .result-panel.show { display: block; }
+
+  .result-score {
+    font-size: 38px;
+    font-weight: 800;
+    color: #24247d;
+    line-height: 1;
+  }
+
+  .result-label {
+    font-size: 14px;
+    color: #666;
+    margin-top: 6px;
+  }
+
+  .result-badge {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 5px 16px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .badge-great { background: #dcfce7; color: #16a34a; }
+  .badge-good { background: #fef9c3; color: #a16207; }
+  .badge-try { background: #ffe4e6; color: #be123c; }
+
+  .tip-box {
+    margin-top: 24px;
+    background: #eeeef8;
+    border-left: 4px solid #24247d;
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+  }
+
+  .tip-box p {
+    font-size: 13px;
+    color: #444;
+    line-height: 1.6;
+  }
+
+  .tip-box strong { color: #24247d; }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <div class="header">
+    <div class="header-icon">✏️</div>
+    <div class="header-text">
+      <h1>Correct the Mistakes</h1>
+      <p>Countable &amp; Uncountable Nouns — Select the correct option</p>
+    </div>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div id="items"></div>
+
+  <div class="actions">
+    <button class="btn btn-primary" id="checkBtn" onclick="checkAnswers()">Check answers</button>
+    <button class="btn btn-secondary" id="resetBtn" onclick="resetAll()">Try again</button>
+  </div>
+
+  <div class="result-panel" id="resultPanel">
+    <div class="result-score" id="scoreText"></div>
+    <div class="result-label">correct answers out of 5</div>
+    <div class="result-badge" id="resultBadge"></div>
+  </div>
+
+  <div class="tip-box">
+    <p>💡 <strong>Grammar tip:</strong> Use <strong>some</strong> with uncountable nouns (bread, water, advice, furniture) and with plural countable nouns in affirmative sentences. Use <strong>many</strong> with countable nouns and <strong>much</strong> with uncountable nouns.</p>
+  </div>
+
+</div>
+
+<script>
+  const exercises = [
+    {
+      wrong: "I have <span class='wrong-part'>a</span> bread.",
+      prefix: "I have",
+      options: ["-- select --", "a bread", "some bread", "any bread", "much bread"],
+      correct: "some bread",
+      suffix: "."
+    },
+    {
+      wrong: "There are <span class='wrong-part'>many</span> water in the glass.",
+      prefix: "There is",
+      options: ["-- select --", "many water", "much water", "some waters", "a water"],
+      correct: "much water",
+      suffix: " in the glass."
+    },
+    {
+      wrong: "She gave me <span class='wrong-part'>an</span> advice.",
+      prefix: "She gave me",
+      options: ["-- select --", "an advice", "a advice", "some advice", "many advice"],
+      correct: "some advice",
+      suffix: "."
+    },
+    {
+      wrong: "We bought <span class='wrong-part'>a few</span> furniture.",
+      prefix: "We bought",
+      options: ["-- select --", "a few furniture", "some furniture", "many furnitures", "a furniture"],
+      correct: "some furniture",
+      suffix: "."
+    },
+    {
+      wrong: "He has <span class='wrong-part'>much</span> friends.",
+      prefix: "He has",
+      options: ["-- select --", "much friends", "some friend", "many friends", "a few friend"],
+      correct: "many friends",
+      suffix: "."
+    }
+  ];
+
+  function buildItems() {
+    const container = document.getElementById('items');
+    container.innerHTML = '';
+    exercises.forEach((ex, i) => {
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.id = 'item' + i;
+
+      const opts = ex.options.map(o =>
+        `<option value="${o}">${o}</option>`
+      ).join('');
+
+      div.innerHTML = `
+        <div class="item-number">Sentence ${i + 1}</div>
+        <div class="wrong-sentence">${ex.wrong}</div>
+        <div class="correction-row">
+          <span class="sentence-prefix">${ex.prefix}</span>
+          <div class="dropdown-wrap">
+            <select id="sel${i}" onchange="updateProgress()">
+              ${opts}
+            </select>
+          </div>
+          <span class="sentence-prefix">${ex.suffix}</span>
+          <span class="feedback-icon" id="icon${i}"></span>
+          <span class="feedback-msg" id="msg${i}"></span>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  function updateProgress() {
+    let answered = 0;
+    exercises.forEach((_, i) => {
+      const sel = document.getElementById('sel' + i);
+      if (sel.value !== '-- select --') answered++;
+    });
+    document.getElementById('progressBar').style.width = (answered / exercises.length * 100) + '%';
+  }
+
+  function checkAnswers() {
+    let score = 0;
+    exercises.forEach((ex, i) => {
+      const sel = document.getElementById('sel' + i);
+      const item = document.getElementById('item' + i);
+      const icon = document.getElementById('icon' + i);
+      const msg = document.getElementById('msg' + i);
+
+      if (sel.value === '-- select --') {
+        item.classList.remove('correct', 'incorrect');
+        icon.textContent = '';
+        msg.textContent = '';
+        return;
+      }
+
+      sel.disabled = true;
+
+      if (sel.value === ex.correct) {
+        score++;
+        item.classList.add('correct');
+        item.classList.remove('incorrect');
+        icon.textContent = '✅';
+        msg.textContent = 'Correct!';
+      } else {
+        item.classList.add('incorrect');
+        item.classList.remove('correct');
+        icon.textContent = '❌';
+        msg.textContent = `Correct: "${ex.correct}"`;
+      }
+    });
+
+    document.getElementById('checkBtn').disabled = true;
+
+    const panel = document.getElementById('resultPanel');
+    panel.classList.add('show');
+    document.getElementById('scoreText').textContent = score + '/5';
+
+    const badge = document.getElementById('resultBadge');
+    if (score === 5) {
+      badge.textContent = '🎉 Excellent work!';
+      badge.className = 'result-badge badge-great';
+    } else if (score >= 3) {
+      badge.textContent = '👍 Good job! Review the mistakes.';
+      badge.className = 'result-badge badge-good';
+    } else {
+      badge.textContent = '📖 Keep practicing!';
+      badge.className = 'result-badge badge-try';
+    }
+  }
+
+  function resetAll() {
+    document.getElementById('checkBtn').disabled = false;
+    document.getElementById('resultPanel').classList.remove('show');
+    document.getElementById('progressBar').style.width = '0%';
+    buildItems();
+  }
+
+  buildItems();
+</script>
+</body>
+</html>
