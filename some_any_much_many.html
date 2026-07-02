@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Some / Any / Much / Many</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f5f6fa;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 28px 16px;
+  }
+
+  .card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 36px 40px;
+    max-width: 760px;
+    width: 100%;
+    box-shadow: 0 4px 24px rgba(36,36,125,0.10);
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+
+  .header-icon {
+    background: #24247d;
+    color: #fff;
+    border-radius: 10px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .header-text h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #24247d;
+  }
+
+  .header-text p {
+    font-size: 13px;
+    color: #888;
+    margin-top: 2px;
+  }
+
+  /* PROGRESS */
+  .progress-wrap {
+    margin: 18px 0 28px;
+  }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 6px;
+  }
+
+  .progress-bar-bg {
+    background: #eeeef8;
+    border-radius: 99px;
+    height: 7px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 7px;
+    background: linear-gradient(90deg, #24247d, #ff0343);
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.35s ease;
+  }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #24247d;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-left: 4px solid #24247d;
+    padding-left: 10px;
+    margin-bottom: 14px;
+  }
+
+  .section-subtitle {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 16px;
+    margin-top: -8px;
+  }
+
+  /* ITEMS */
+  .item {
+    background: #f8f8fd;
+    border: 1.5px solid #e0e0f0;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    transition: border-color 0.25s, background 0.25s;
+  }
+
+  .item.correct  { border-color: #22c55e; background: #f0fdf4; }
+  .item.incorrect { border-color: #ff0343; background: #fff5f7; }
+
+  .item-num {
+    font-size: 12px;
+    font-weight: 700;
+    color: #24247d;
+    min-width: 22px;
+  }
+
+  .item-text {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.5;
+  }
+
+  .wrong-part {
+    text-decoration: line-through;
+    color: #ff0343;
+    font-weight: 600;
+  }
+
+  /* DROPDOWN */
+  .dropdown-wrap { position: relative; }
+
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    background: #fff;
+    border: 1.5px solid #c0c0e0;
+    border-radius: 7px;
+    padding: 5px 32px 5px 10px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #333;
+    cursor: pointer;
+    min-width: 110px;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  select:focus { border-color: #24247d; }
+  select:disabled { opacity: 0.65; cursor: default; }
+
+  .dropdown-wrap::after {
+    content: '▾';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: #888;
+    pointer-events: none;
+  }
+
+  .feedback-inline {
+    font-size: 13px;
+    font-weight: 600;
+    display: none;
+  }
+
+  .item.correct  .feedback-inline { display: inline; color: #16a34a; }
+  .item.incorrect .feedback-inline { display: inline; color: #be123c; }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 2px solid #f0f0f8;
+    margin: 28px 0;
+  }
+
+  /* ACTIONS */
+  .actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 11px 28px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.45; cursor: default; }
+
+  .btn-primary  { background: #24247d; color: #fff; }
+  .btn-primary:hover:not(:disabled) { opacity: 0.88; }
+  .btn-secondary { background: #f0f0f8; color: #24247d; border: 1.5px solid #d0d0ea; }
+  .btn-secondary:hover { background: #e4e4f4; }
+
+  /* RESULT */
+  .result-panel {
+    display: none;
+    margin-top: 22px;
+    background: #f0f0fa;
+    border-radius: 12px;
+    padding: 20px 24px;
+    text-align: center;
+    border: 1.5px solid #d0d0ea;
+  }
+
+  .result-panel.show { display: block; }
+
+  .result-score {
+    font-size: 40px;
+    font-weight: 800;
+    color: #24247d;
+    line-height: 1;
+  }
+
+  .result-label { font-size: 14px; color: #666; margin-top: 4px; }
+
+  .result-badge {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 5px 18px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .badge-great { background: #dcfce7; color: #16a34a; }
+  .badge-good  { background: #fef9c3; color: #a16207; }
+  .badge-try   { background: #ffe4e6; color: #be123c; }
+
+  /* TIP */
+  .tip-box {
+    margin-top: 24px;
+    background: #eeeef8;
+    border-left: 4px solid #24247d;
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+  }
+
+  .tip-box p { font-size: 13px; color: #444; line-height: 1.7; }
+  .tip-box strong { color: #24247d; }
+  .tip-row { display: flex; gap: 6px; margin-bottom: 4px; }
+  .tip-tag {
+    background: #24247d;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 4px;
+    padding: 1px 7px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <div class="header">
+    <div class="header-icon">📝</div>
+    <div class="header-text">
+      <h1>Some / Any / Much / Many</h1>
+      <p>Two exercises · 15 questions total</p>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span>Progress</span>
+      <span id="progressLabel">0 / 15 answered</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="section-title">Part 1 — Fill in the blanks</div>
+  <p class="section-subtitle">Choose the correct word: <strong>some / any / much / many</strong></p>
+  <div id="part1"></div>
+
+  <hr class="divider">
+
+  <!-- SECTION 2 -->
+  <div class="section-title">Part 2 — Correct the mistakes</div>
+  <p class="section-subtitle">Select the corrected version of the underlined word.</p>
+  <div id="part2"></div>
+
+  <div class="actions">
+    <button class="btn btn-primary" id="checkBtn" onclick="checkAll()">Check answers</button>
+    <button class="btn btn-secondary" onclick="resetAll()">Try again</button>
+  </div>
+
+  <div class="result-panel" id="resultPanel">
+    <div class="result-score" id="scoreText"></div>
+    <div class="result-label">correct answers out of 15</div>
+    <div class="result-badge" id="resultBadge"></div>
+  </div>
+
+  <div class="tip-box">
+    <div class="tip-row"><span class="tip-tag">SOME</span><p>Affirmative sentences + offers/requests: <em>"I have some money."</em></p></div>
+    <div class="tip-row"><span class="tip-tag">ANY</span><p>Negatives &amp; questions: <em>"I don't have any time." / "Are there any chairs?"</em></p></div>
+    <div class="tip-row"><span class="tip-tag">MUCH</span><p>Uncountable nouns in negatives/questions: <em>"How much sugar?"</em></p></div>
+    <div class="tip-row" style="margin-bottom:0"><span class="tip-tag">MANY</span><p>Countable plural nouns in negatives/questions: <em>"There aren't many chairs."</em></p></div>
+  </div>
+
+</div>
+
+<script>
+  const part1 = [
+    { sentence: ["I don't have", "", "money."],        correct: "any",  options: ["some","any","much","many"] },
+    { sentence: ["She has", "", "friends in London."], correct: "some", options: ["some","any","much","many"] },
+    { sentence: ["Are there", "", "bananas in the basket?"], correct: "any", options: ["some","any","much","many"] },
+    { sentence: ["We need", "", "milk for the recipe."],    correct: "some", options: ["some","any","much","many"] },
+    { sentence: ["How", "", "sugar do you want?"],         correct: "much", options: ["some","any","much","many"] },
+    { sentence: ["He didn't buy", "", "apples."],          correct: "any",  options: ["some","any","much","many"] },
+    { sentence: ["They gave me", "", "good advice."],      correct: "some", options: ["some","any","much","many"] },
+    { sentence: ["There aren't", "", "chairs in the room."], correct: "many", options: ["some","any","much","many"] },
+    { sentence: ["I have", "", "books to lend you."],      correct: "some", options: ["some","any","much","many"] },
+    { sentence: ["Is there", "", "water in the bottle?"], correct: "any",  options: ["some","any","much","many"] },
+  ];
+
+  const part2 = [
+    { wrong: "some", sentence: ["I don't have", "some", "time."],          correct: "any",  options: ["some","any","much","many"] },
+    { wrong: "much", sentence: ["There are", "much", "people here."],       correct: "many", options: ["some","any","much","many"] },
+    { wrong: "many", sentence: ["Do you have", "many", "milk?"],            correct: "much", options: ["some","any","much","many"] },
+    { wrong: "any",  sentence: ["I need", "any", "help."],                  correct: "some", options: ["some","any","much","many"] },
+    { wrong: "some", sentence: ["She didn't buy", "some", "bread."],        correct: "any",  options: ["some","any","much","many"] },
+  ];
+
+  const TOTAL = part1.length + part2.length;
+
+  function makeSelect(id, options, onchange) {
+    const wrap = document.createElement('div');
+    wrap.className = 'dropdown-wrap';
+    const sel = document.createElement('select');
+    sel.id = id;
+    sel.onchange = onchange;
+    const blank = document.createElement('option');
+    blank.value = '';
+    blank.textContent = '— select —';
+    sel.appendChild(blank);
+    options.forEach(o => {
+      const opt = document.createElement('option');
+      opt.value = o;
+      opt.textContent = o;
+      sel.appendChild(opt);
+    });
+    wrap.appendChild(sel);
+    return wrap;
+  }
+
+  function updateProgress() {
+    let answered = 0;
+    for (let i = 0; i < TOTAL; i++) {
+      const sel = document.getElementById('sel' + i);
+      if (sel && sel.value !== '') answered++;
+    }
+    const pct = (answered / TOTAL) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = answered + ' / ' + TOTAL + ' answered';
+  }
+
+  function buildPart1() {
+    const container = document.getElementById('part1');
+    container.innerHTML = '';
+    part1.forEach((ex, i) => {
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.id = 'item' + i;
+
+      const num = document.createElement('span');
+      num.className = 'item-num';
+      num.textContent = (i + 1) + '.';
+      div.appendChild(num);
+
+      const before = document.createElement('span');
+      before.className = 'item-text';
+      before.textContent = ex.sentence[0];
+      div.appendChild(before);
+
+      div.appendChild(makeSelect('sel' + i, ex.options, updateProgress));
+
+      const after = document.createElement('span');
+      after.className = 'item-text';
+      after.textContent = ex.sentence[2];
+      div.appendChild(after);
+
+      const fb = document.createElement('span');
+      fb.className = 'feedback-inline';
+      fb.id = 'fb' + i;
+      div.appendChild(fb);
+
+      container.appendChild(div);
+    });
+  }
+
+  function buildPart2() {
+    const container = document.getElementById('part2');
+    container.innerHTML = '';
+    part2.forEach((ex, gi) => {
+      const i = part1.length + gi;
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.id = 'item' + i;
+
+      const num = document.createElement('span');
+      num.className = 'item-num';
+      num.textContent = (gi + 1) + '.';
+      div.appendChild(num);
+
+      const before = document.createElement('span');
+      before.className = 'item-text';
+      before.textContent = ex.sentence[0] + ' ';
+      div.appendChild(before);
+
+      const wrongSpan = document.createElement('span');
+      wrongSpan.className = 'item-text wrong-part';
+      wrongSpan.textContent = ex.wrong;
+      div.appendChild(wrongSpan);
+
+      const mid = document.createElement('span');
+      mid.className = 'item-text';
+      mid.textContent = ' ' + ex.sentence[2] + ' →';
+      div.appendChild(mid);
+
+      const after2 = document.createElement('span');
+      after2.className = 'item-text';
+      after2.textContent = ex.sentence[0] + ' ';
+      div.appendChild(after2);
+
+      div.appendChild(makeSelect('sel' + i, ex.options, updateProgress));
+
+      const after3 = document.createElement('span');
+      after3.className = 'item-text';
+      after3.textContent = ' ' + ex.sentence[2];
+      div.appendChild(after3);
+
+      const fb = document.createElement('span');
+      fb.className = 'feedback-inline';
+      fb.id = 'fb' + i;
+      div.appendChild(fb);
+
+      container.appendChild(div);
+    });
+  }
+
+  function checkAll() {
+    let score = 0;
+    const allEx = [...part1, ...part2];
+
+    allEx.forEach((ex, i) => {
+      const sel = document.getElementById('sel' + i);
+      const item = document.getElementById('item' + i);
+      const fb = document.getElementById('fb' + i);
+      if (!sel || sel.value === '') return;
+
+      sel.disabled = true;
+
+      if (sel.value === ex.correct) {
+        score++;
+        item.classList.add('correct');
+        item.classList.remove('incorrect');
+        fb.textContent = '✅ Correct!';
+      } else {
+        item.classList.add('incorrect');
+        item.classList.remove('correct');
+        fb.textContent = `❌ Answer: "${ex.correct}"`;
+      }
+    });
+
+    document.getElementById('checkBtn').disabled = true;
+
+    const panel = document.getElementById('resultPanel');
+    panel.classList.add('show');
+    document.getElementById('scoreText').textContent = score + '/15';
+
+    const badge = document.getElementById('resultBadge');
+    if (score >= 13) {
+      badge.textContent = '🎉 Excellent! Outstanding performance.';
+      badge.className = 'result-badge badge-great';
+    } else if (score >= 9) {
+      badge.textContent = '👍 Good job! Review the mistakes.';
+      badge.className = 'result-badge badge-good';
+    } else {
+      badge.textContent = '📖 Keep practicing! Check the grammar tip below.';
+      badge.className = 'result-badge badge-try';
+    }
+  }
+
+  function resetAll() {
+    document.getElementById('checkBtn').disabled = false;
+    document.getElementById('resultPanel').classList.remove('show');
+    document.getElementById('progressBar').style.width = '0%';
+    document.getElementById('progressLabel').textContent = '0 / 15 answered';
+    buildPart1();
+    buildPart2();
+  }
+
+  buildPart1();
+  buildPart2();
+</script>
+</body>
+</html>
