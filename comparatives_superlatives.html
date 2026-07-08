@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparatives & Superlatives</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f5f6fa;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 28px 16px;
+  }
+
+  .card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 36px 40px;
+    max-width: 760px;
+    width: 100%;
+    box-shadow: 0 4px 24px rgba(36,36,125,0.10);
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+
+  .header-icon {
+    background: #24247d;
+    color: #fff;
+    border-radius: 10px;
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .header-text h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #24247d;
+  }
+
+  .header-text p {
+    font-size: 13px;
+    color: #888;
+    margin-top: 2px;
+  }
+
+  /* PROGRESS */
+  .progress-wrap { margin: 18px 0 26px; }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 6px;
+  }
+
+  .progress-bar-bg {
+    background: #eeeef8;
+    border-radius: 99px;
+    height: 7px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 7px;
+    background: linear-gradient(90deg, #24247d, #ff0343);
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.35s ease;
+  }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #24247d;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-left: 4px solid #24247d;
+    padding-left: 10px;
+    margin-bottom: 6px;
+  }
+
+  .section-subtitle {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 18px;
+    padding-left: 14px;
+  }
+
+  /* ITEM */
+  .item {
+    background: #f8f8fd;
+    border: 1.5px solid #e0e0f0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    transition: border-color 0.25s, background 0.25s;
+  }
+
+  .item.correct   { border-color: #22c55e; background: #f0fdf4; }
+  .item.incorrect { border-color: #ff0343; background: #fff5f7; }
+
+  .item-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: #24247d;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+
+  .sentence-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .item-text {
+    font-size: 15px;
+    color: #333;
+    line-height: 1.6;
+  }
+
+  /* DROPDOWN */
+  .dropdown-wrap { position: relative; }
+
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    background: #fff;
+    border: 1.5px solid #c0c0e0;
+    border-radius: 8px;
+    padding: 6px 34px 6px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #333;
+    cursor: pointer;
+    min-width: 175px;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  select:focus { border-color: #24247d; }
+  select:disabled { opacity: 0.65; cursor: default; }
+
+  .dropdown-wrap::after {
+    content: '▾';
+    position: absolute;
+    right: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: #888;
+    pointer-events: none;
+  }
+
+  /* HINT TAGS */
+  .hint-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  .hint-tag {
+    font-size: 11px;
+    background: #eeeef8;
+    color: #555;
+    border-radius: 5px;
+    padding: 2px 8px;
+    border: 1px solid #d8d8ef;
+  }
+
+  /* FEEDBACK */
+  .feedback-row {
+    margin-top: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    display: none;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .item.correct .feedback-row,
+  .item.incorrect .feedback-row { display: flex; }
+
+  .item.correct  .feedback-row { color: #16a34a; }
+  .item.incorrect .feedback-row { color: #be123c; }
+
+  /* ACTIONS */
+  .actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 11px 28px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.45; cursor: default; }
+
+  .btn-primary { background: #24247d; color: #fff; }
+  .btn-primary:hover:not(:disabled) { opacity: 0.88; }
+  .btn-secondary { background: #f0f0f8; color: #24247d; border: 1.5px solid #d0d0ea; }
+  .btn-secondary:hover { background: #e4e4f4; }
+
+  /* RESULT */
+  .result-panel {
+    display: none;
+    margin-top: 22px;
+    background: #f0f0fa;
+    border-radius: 12px;
+    padding: 20px 24px;
+    text-align: center;
+    border: 1.5px solid #d0d0ea;
+  }
+
+  .result-panel.show { display: block; }
+  .result-score { font-size: 42px; font-weight: 800; color: #24247d; line-height: 1; }
+  .result-label { font-size: 14px; color: #666; margin-top: 4px; }
+
+  .result-badge {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 5px 18px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .badge-great { background: #dcfce7; color: #16a34a; }
+  .badge-good  { background: #fef9c3; color: #a16207; }
+  .badge-try   { background: #ffe4e6; color: #be123c; }
+
+  /* TIP */
+  .tip-box {
+    margin-top: 24px;
+    background: #eeeef8;
+    border-left: 4px solid #24247d;
+    border-radius: 0 8px 8px 0;
+    padding: 16px 20px;
+  }
+
+  .tip-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 20px;
+    margin-top: 4px;
+  }
+
+  .tip-item { font-size: 13px; color: #444; line-height: 1.6; }
+  .tip-item strong { color: #24247d; display: block; margin-bottom: 2px; }
+
+  @media (max-width: 500px) {
+    .card { padding: 24px 18px; }
+    .tip-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <div class="header">
+    <div class="header-icon">📊</div>
+    <div class="header-text">
+      <h1>Comparatives &amp; Superlatives</h1>
+      <p>Choose the correct form for each sentence</p>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span>Progress</span>
+      <span id="progressLabel">0 / 10 answered</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+  </div>
+
+  <div class="section-title">Choose the correct form</div>
+  <p class="section-subtitle">Comparative or superlative? Select the right option from the dropdown.</p>
+
+  <div id="itemsContainer"></div>
+
+  <div class="actions">
+    <button class="btn btn-primary" id="checkBtn" onclick="checkAll()">Check answers</button>
+    <button class="btn btn-secondary" onclick="resetAll()">Try again</button>
+  </div>
+
+  <div class="result-panel" id="resultPanel">
+    <div class="result-score" id="scoreText"></div>
+    <div class="result-label">correct answers out of 10</div>
+    <div class="result-badge" id="resultBadge"></div>
+  </div>
+
+  <div class="tip-box">
+    <p style="font-size:13px;font-weight:700;color:#24247d;margin-bottom:10px;">💡 Grammar Reference</p>
+    <div class="tip-grid">
+      <div class="tip-item">
+        <strong>Comparative (than)</strong>
+        Short adj: add <em>-er</em> → bigger, taller<br>
+        Long adj: use <em>more</em> → more difficult
+      </div>
+      <div class="tip-item">
+        <strong>Superlative (the …est / most)</strong>
+        Short adj: add <em>-est</em> → the biggest<br>
+        Long adj: use <em>the most</em> → the most difficult
+      </div>
+      <div class="tip-item">
+        <strong>Spelling rules</strong>
+        CVC ending: double consonant → big → bigger<br>
+        -y ending: change to -i → funny → funniest
+      </div>
+      <div class="tip-item">
+        <strong>Key signals</strong>
+        <em>"than"</em> → comparative<br>
+        <em>"the … I've ever …"</em> → superlative
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const exercises = [
+    {
+      before: "London is",
+      after: "than my hometown.",
+      options: ["big", "bigger", "the biggest"],
+      correct: "bigger",
+      hint: "Comparative needed — key word: than"
+    },
+    {
+      before: "That was",
+      after: "joke I've ever heard!",
+      options: ["funny", "funnier", "the funniest"],
+      correct: "the funniest",
+      hint: "Superlative needed — key phrase: I've ever heard"
+    },
+    {
+      before: "This test is",
+      after: "than the last one.",
+      options: ["difficult", "more difficult", "the most difficult"],
+      correct: "more difficult",
+      hint: "Comparative needed — key word: than"
+    },
+    {
+      before: "Peter is",
+      after: "in the team.",
+      options: ["tall", "taller", "the tallest"],
+      correct: "the tallest",
+      hint: "Superlative needed — key phrase: in the team"
+    },
+    {
+      before: "Apples are",
+      after: "than candy.",
+      options: ["healthy", "healthier", "the healthiest"],
+      correct: "healthier",
+      hint: "Comparative needed — key word: than"
+    },
+    {
+      before: "My sister is",
+      after: "person in our family.",
+      options: ["organized", "more organized", "the most organized"],
+      correct: "the most organized",
+      hint: "Superlative needed — key phrase: in our family"
+    },
+    {
+      before: "This project is",
+      after: "than the previous one.",
+      options: ["complex", "more complex", "the most complex"],
+      correct: "more complex",
+      hint: "Comparative needed — key word: than"
+    },
+    {
+      before: "January is",
+      after: "month of the year here.",
+      options: ["cold", "colder", "the coldest"],
+      correct: "the coldest",
+      hint: "Superlative needed — key phrase: of the year"
+    },
+    {
+      before: "Our new office is",
+      after: "than the old one.",
+      options: ["modern", "more modern", "the most modern"],
+      correct: "more modern",
+      hint: "Comparative needed — key word: than"
+    },
+    {
+      before: "She is",
+      after: "student in the class.",
+      options: ["bright", "brighter", "the brightest"],
+      correct: "the brightest",
+      hint: "Superlative needed — key phrase: in the class"
+    }
+  ];
+
+  const TOTAL = exercises.length;
+
+  function buildItems() {
+    const container = document.getElementById('itemsContainer');
+    container.innerHTML = '';
+
+    exercises.forEach((ex, i) => {
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.id = 'item' + i;
+
+      // Number
+      const num = document.createElement('div');
+      num.className = 'item-num';
+      num.textContent = 'Sentence ' + (i + 1);
+      div.appendChild(num);
+
+      // Sentence row
+      const row = document.createElement('div');
+      row.className = 'sentence-row';
+
+      const before = document.createElement('span');
+      before.className = 'item-text';
+      before.textContent = ex.before;
+      row.appendChild(before);
+
+      // Dropdown
+      const wrap = document.createElement('div');
+      wrap.className = 'dropdown-wrap';
+      const sel = document.createElement('select');
+      sel.id = 'sel' + i;
+      sel.onchange = updateProgress;
+
+      const blank = document.createElement('option');
+      blank.value = '';
+      blank.textContent = '— select —';
+      sel.appendChild(blank);
+
+      ex.options.forEach(o => {
+        const opt = document.createElement('option');
+        opt.value = o;
+        opt.textContent = o;
+        sel.appendChild(opt);
+      });
+
+      wrap.appendChild(sel);
+      row.appendChild(wrap);
+
+      const after = document.createElement('span');
+      after.className = 'item-text';
+      after.textContent = ex.after;
+      row.appendChild(after);
+
+      div.appendChild(row);
+
+      // Hint tags
+      const hintRow = document.createElement('div');
+      hintRow.className = 'hint-row';
+      ex.options.forEach(o => {
+        const tag = document.createElement('span');
+        tag.className = 'hint-tag';
+        tag.textContent = o;
+        hintRow.appendChild(tag);
+      });
+      div.appendChild(hintRow);
+
+      // Feedback
+      const fb = document.createElement('div');
+      fb.className = 'feedback-row';
+      fb.id = 'fb' + i;
+      div.appendChild(fb);
+
+      container.appendChild(div);
+    });
+  }
+
+  function updateProgress() {
+    let answered = 0;
+    for (let i = 0; i < TOTAL; i++) {
+      const sel = document.getElementById('sel' + i);
+      if (sel && sel.value !== '') answered++;
+    }
+    const pct = (answered / TOTAL) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = answered + ' / ' + TOTAL + ' answered';
+  }
+
+  function checkAll() {
+    let score = 0;
+
+    exercises.forEach((ex, i) => {
+      const sel = document.getElementById('sel' + i);
+      const item = document.getElementById('item' + i);
+      const fb = document.getElementById('fb' + i);
+
+      if (!sel || sel.value === '') return;
+
+      sel.disabled = true;
+
+      if (sel.value === ex.correct) {
+        score++;
+        item.classList.add('correct');
+        item.classList.remove('incorrect');
+        fb.innerHTML = '✅ Correct! &nbsp;<span style="font-weight:400;color:#444;">— ' + ex.hint + '</span>';
+      } else {
+        item.classList.add('incorrect');
+        item.classList.remove('correct');
+        fb.innerHTML = '❌ Correct answer: <em>"' + ex.correct + '"</em> &nbsp;— ' + ex.hint;
+      }
+    });
+
+    document.getElementById('checkBtn').disabled = true;
+
+    const panel = document.getElementById('resultPanel');
+    panel.classList.add('show');
+    document.getElementById('scoreText').textContent = score + '/10';
+
+    const badge = document.getElementById('resultBadge');
+    if (score >= 9) {
+      badge.textContent = '🎉 Excellent! You mastered comparatives & superlatives.';
+      badge.className = 'result-badge badge-great';
+    } else if (score >= 6) {
+      badge.textContent = '👍 Good job! Review the grammar tip below.';
+      badge.className = 'result-badge badge-good';
+    } else {
+      badge.textContent = '📖 Keep practicing! Check the reference guide below.';
+      badge.className = 'result-badge badge-try';
+    }
+  }
+
+  function resetAll() {
+    document.getElementById('checkBtn').disabled = false;
+    document.getElementById('resultPanel').classList.remove('show');
+    document.getElementById('progressBar').style.width = '0%';
+    document.getElementById('progressLabel').textContent = '0 / 10 answered';
+    buildItems();
+  }
+
+  buildItems();
+</script>
+</body>
+</html>
