@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Past Continuous & Past Simple</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f5f6fa;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 28px 16px;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 36px 40px;
+    max-width: 800px;
+    width: 100%;
+    box-shadow: 0 4px 24px rgba(36,36,125,0.10);
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+
+  .header-icon {
+    background: #24247d;
+    color: #fff;
+    border-radius: 10px;
+    width: 46px; height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .header-text h1 { font-size: 20px; font-weight: 700; color: #24247d; }
+  .header-text p  { font-size: 13px; color: #888; margin-top: 2px; }
+
+  .progress-wrap { margin: 18px 0 26px; }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px; color: #888;
+    margin-bottom: 6px;
+  }
+
+  .progress-bar-bg { background: #eeeef8; border-radius: 99px; height: 7px; overflow: hidden; }
+
+  .progress-bar {
+    height: 7px;
+    background: linear-gradient(90deg, #24247d, #ff0343);
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.35s ease;
+  }
+
+  .section-label {
+    font-size: 11px; font-weight: 700; color: #fff;
+    background: #24247d;
+    border-radius: 6px;
+    padding: 3px 10px;
+    display: inline-block;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .section-title {
+    font-size: 16px; font-weight: 700; color: #24247d;
+    margin-bottom: 4px;
+  }
+
+  .section-sub {
+    font-size: 13px; color: #666;
+    margin-bottom: 18px;
+  }
+
+  hr.divider {
+    border: none;
+    border-top: 2px solid #f0f0f8;
+    margin: 28px 0;
+  }
+
+  /* ITEM */
+  .item {
+    background: #f8f8fd;
+    border: 1.5px solid #e0e0f0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    transition: border-color 0.25s, background 0.25s;
+  }
+
+  .item.correct   { border-color: #22c55e; background: #f0fdf4; }
+  .item.incorrect { border-color: #ff0343; background: #fff5f7; }
+
+  .item-num {
+    font-size: 11px; font-weight: 700;
+    color: #24247d;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+
+  .sentence-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    line-height: 2;
+  }
+
+  .txt { font-size: 15px; color: #333; }
+
+  .wrong-word { text-decoration: line-through; color: #ff0343; font-weight: 600; font-size: 15px; }
+
+  /* DROPDOWN */
+  .dd-wrap { position: relative; display: inline-block; }
+
+  select {
+    appearance: none; -webkit-appearance: none;
+    background: #fff;
+    border: 1.5px solid #c0c0e0;
+    border-radius: 8px;
+    padding: 5px 32px 5px 10px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #333;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  select:focus   { border-color: #24247d; }
+  select:disabled { opacity: 0.65; cursor: default; }
+
+  .dd-wrap::after {
+    content: '▾';
+    position: absolute;
+    right: 10px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px; color: #888;
+    pointer-events: none;
+  }
+
+  /* FEEDBACK */
+  .fb-row {
+    margin-top: 10px;
+    font-size: 13px; font-weight: 600;
+    display: none;
+    gap: 6px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .item.correct   .fb-row { display: flex; color: #16a34a; }
+  .item.incorrect .fb-row { display: flex; color: #be123c; }
+
+  /* ACTIONS */
+  .actions { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+
+  .btn {
+    padding: 11px 28px;
+    border-radius: 8px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer; border: none;
+    font-family: inherit;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .btn:active   { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.45; cursor: default; }
+
+  .btn-primary   { background: #24247d; color: #fff; }
+  .btn-primary:hover:not(:disabled) { opacity: 0.88; }
+  .btn-secondary { background: #f0f0f8; color: #24247d; border: 1.5px solid #d0d0ea; }
+  .btn-secondary:hover { background: #e4e4f4; }
+
+  /* RESULT */
+  .result-panel {
+    display: none;
+    margin-top: 22px;
+    background: #f0f0fa;
+    border-radius: 12px;
+    padding: 20px 24px;
+    text-align: center;
+    border: 1.5px solid #d0d0ea;
+  }
+
+  .result-panel.show { display: block; }
+  .result-score { font-size: 42px; font-weight: 800; color: #24247d; line-height: 1; }
+  .result-label { font-size: 14px; color: #666; margin-top: 4px; }
+
+  .result-badge {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 5px 18px;
+    border-radius: 99px;
+    font-size: 13px; font-weight: 700;
+  }
+
+  .badge-great { background: #dcfce7; color: #16a34a; }
+  .badge-good  { background: #fef9c3; color: #a16207; }
+  .badge-try   { background: #ffe4e6; color: #be123c; }
+
+  /* TIP */
+  .tip-box {
+    margin-top: 24px;
+    background: #eeeef8;
+    border-left: 4px solid #24247d;
+    border-radius: 0 8px 8px 0;
+    padding: 16px 20px;
+  }
+
+  .tip-title { font-size: 13px; font-weight: 700; color: #24247d; margin-bottom: 10px; }
+
+  .tip-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 24px;
+  }
+
+  .tip-item { font-size: 13px; color: #444; line-height: 1.65; }
+  .tip-item strong { color: #24247d; display: block; margin-bottom: 2px; }
+
+  .formula-box {
+    background: #fff;
+    border: 1.5px solid #d0d0ea;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #333;
+    margin-top: 12px;
+    line-height: 1.8;
+  }
+
+  .formula-box em { color: #24247d; font-style: normal; font-weight: 600; }
+
+  @media (max-width: 520px) {
+    .card { padding: 24px 16px; }
+    .tip-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <div class="header">
+    <div class="header-icon">⏳</div>
+    <div class="header-text">
+      <h1>Past Continuous &amp; Past Simple</h1>
+      <p>Exercises 5 &amp; 6 · 15 questions total</p>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span>Progress</span>
+      <span id="progressLabel">0 / 15 answered</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+  </div>
+
+  <!-- EXERCISE 5 -->
+  <div class="section-label">Exercise 5</div>
+  <div class="section-title">Past Continuous + Past Simple</div>
+  <p class="section-sub">Select the correct verb form for each blank.</p>
+  <div id="ex5container"></div>
+
+  <hr class="divider">
+
+  <!-- EXERCISE 6 -->
+  <div class="section-label">Exercise 6</div>
+  <div class="section-title">Find the Mistake</div>
+  <p class="section-sub">The underlined word is wrong. Select the correct word from the dropdown.</p>
+  <div id="ex6container"></div>
+
+  <div class="actions">
+    <button class="btn btn-primary" id="checkBtn" onclick="checkAll()">Check answers</button>
+    <button class="btn btn-secondary" onclick="resetAll()">Try again</button>
+  </div>
+
+  <div class="result-panel" id="resultPanel">
+    <div class="result-score" id="scoreText"></div>
+    <div class="result-label">correct answers out of 15</div>
+    <div class="result-badge" id="resultBadge"></div>
+  </div>
+
+  <div class="tip-box">
+    <p class="tip-title">💡 Grammar Reference</p>
+    <div class="tip-grid">
+      <div class="tip-item">
+        <strong>Past Continuous</strong>
+        Action <em>in progress</em> at a past moment.<br>
+        Structure: <em>was/were + verb-ing</em><br>
+        e.g. <em>She was driving.</em>
+      </div>
+      <div class="tip-item">
+        <strong>Past Simple</strong>
+        Action that <em>interrupted</em> the ongoing one.<br>
+        Usually irregular or <em>verb + -ed</em><br>
+        e.g. <em>She saw the accident.</em>
+      </div>
+      <div class="tip-item">
+        <strong>was / were</strong>
+        <em>I / He / She / It</em> → was<br>
+        <em>You / We / They</em> → were
+      </div>
+      <div class="tip-item">
+        <strong>Key connector</strong>
+        Use <em>"when"</em> to link both actions.<br>
+        Past Continuous <em>when</em> Past Simple.
+      </div>
+    </div>
+    <div class="formula-box">
+      <em>Subject + was/were + verb-ing</em> &nbsp;when&nbsp; <em>subject + past simple verb.</em><br>
+      e.g. They <em>were harvesting</em> when it <em>started</em> to rain.
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Each Ex5 sentence: parts[] with '' where dropdown goes, options[], correct[]
+  const ex5 = [
+    {
+      parts: ["I", "", "(work) when my boss", "", "(call)."],
+      blanks: [1, 3],
+      options: [
+        ["was working", "were working", "worked", "is working"],
+        ["called", "was calling", "were calling", "calls"]
+      ],
+      correct: ["was working", "called"],
+      hint: "I → was working (Past Cont.) / interrupted by: called (Past Simple)"
+    },
+    {
+      parts: ["They", "", "(harvest) when it", "", "(start) to rain."],
+      blanks: [1, 3],
+      options: [
+        ["was harvesting", "were harvesting", "harvested", "are harvesting"],
+        ["started", "was starting", "were starting", "starts"]
+      ],
+      correct: ["were harvesting", "started"],
+      hint: "They → were harvesting / interrupted by: started"
+    },
+    {
+      parts: ["She", "", "(drive) when she", "", "(see) the accident."],
+      blanks: [1, 3],
+      options: [
+        ["was driving", "were driving", "drove", "is driving"],
+        ["saw", "was seeing", "seen", "sees"]
+      ],
+      correct: ["was driving", "saw"],
+      hint: "She → was driving / interrupted by: saw (irregular verb)"
+    },
+    {
+      parts: ["We", "", "(have) lunch when the meeting", "", "(begin)."],
+      blanks: [1, 3],
+      options: [
+        ["were having", "was having", "had", "are having"],
+        ["began", "was beginning", "were beginning", "begins"]
+      ],
+      correct: ["were having", "began"],
+      hint: "We → were having / interrupted by: began (irregular verb)"
+    },
+    {
+      parts: ["The workers", "", "(pack) berries when the electricity", "", "(go) out."],
+      blanks: [1, 3],
+      options: [
+        ["were packing", "was packing", "packed", "are packing"],
+        ["went", "was going", "were going", "goes"]
+      ],
+      correct: ["were packing", "went"],
+      hint: "They → were packing / interrupted by: went (irregular verb)"
+    }
+  ];
+
+  const ex6 = [
+    {
+      parts: ["They", "was", "working."],
+      wrongIdx: 1,
+      options: ["was", "were", "is", "are"],
+      correct: "were",
+      hint: "They → were (plural subject)"
+    },
+    {
+      parts: ["She", "were", "preparing the report."],
+      wrongIdx: 1,
+      options: ["were", "was", "is", "are"],
+      correct: "was",
+      hint: "She → was (singular subject)"
+    },
+    {
+      parts: ["Was", "they", "harvesting?"],
+      wrongIdx: 0,
+      options: ["Was", "Were", "Is", "Are"],
+      correct: "Were",
+      hint: "They → Were (plural subject, question form)"
+    },
+    {
+      parts: ["I", "were", "sleeping."],
+      wrongIdx: 1,
+      options: ["were", "was", "am", "is"],
+      correct: "was",
+      hint: "I → was (I always uses was)"
+    },
+    {
+      parts: ["We", "was", "packing berries."],
+      wrongIdx: 1,
+      options: ["was", "were", "is", "are"],
+      correct: "were",
+      hint: "We → were (plural subject)"
+    }
+  ];
+
+  // Global id counter for selects
+  let selCount = 0;
+  // Map selId -> { correct, type }
+  const selMap = {};
+  const TOTAL = 15; // 10 blanks in ex5 + 5 in ex6
+
+  function makeDD(options, correctVal, selId) {
+    selMap[selId] = correctVal;
+    const wrap = document.createElement('div');
+    wrap.className = 'dd-wrap';
+    const sel = document.createElement('select');
+    sel.id = selId;
+    sel.onchange = updateProgress;
+
+    const blank = document.createElement('option');
+    blank.value = ''; blank.textContent = '— select —';
+    sel.appendChild(blank);
+
+    options.forEach(o => {
+      const opt = document.createElement('option');
+      opt.value = o; opt.textContent = o;
+      sel.appendChild(opt);
+    });
+
+    wrap.appendChild(sel);
+    return wrap;
+  }
+
+  function buildEx5() {
+    const container = document.getElementById('ex5container');
+    container.innerHTML = '';
+
+    ex5.forEach((ex, i) => {
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.id = 'ex5item' + i;
+
+      const num = document.createElement('div');
+      num.className = 'item-num';
+      num.textContent = 'Sentence ' + (i + 1);
+      div.appendChild(num);
+
+      const row = document.createElement('div');
+      row.className = 'sentence-row';
+
+      let blankIdx = 0;
+      ex.parts.forEach((part, pi) => {
+        if (part === '') {
+          const sid = 'sel' + (selCount++);
+          row.appendChild(makeDD(ex.options[blankIdx], ex.correct[blankIdx], sid));
+          blankIdx++;
+        } else {
+          const sp = document.createElement('span');
+          sp.className = 'txt';
+          sp.textContent = part;
+          row.appendChild(sp);
+        }
+      });
+
+      div.appendChild(row);
+
+      const fb = document.createElement('div');
+      fb.className = 'fb-row';
+      fb.id = 'ex5fb' + i;
+      div.appendChild(fb);
+
+      container.appendChild(div);
+    });
+  }
+
+  function buildEx6() {
+    const container = document.getElementById('ex6container');
+    container.innerHTML = '';
+
+    ex6.forEach((ex, i) => {
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.id = 'ex6item' + i;
+
+      const num = document.createElement('div');
+      num.className = 'item-num';
+      num.textContent = 'Sentence ' + (i + 1);
+      div.appendChild(num);
+
+      // Wrong sentence
+      const wrongRow = document.createElement('div');
+      wrongRow.className = 'sentence-row';
+      wrongRow.style.marginBottom = '8px';
+
+      ex.parts.forEach((part, pi) => {
+        const sp = document.createElement('span');
+        if (pi === ex.wrongIdx) {
+          sp.className = 'wrong-word';
+        } else {
+          sp.className = 'txt';
+        }
+        sp.textContent = part;
+        wrongRow.appendChild(sp);
+      });
+
+      const arrow = document.createElement('span');
+      arrow.className = 'txt';
+      arrow.style.color = '#888';
+      arrow.textContent = ' →';
+      wrongRow.appendChild(arrow);
+      div.appendChild(wrongRow);
+
+      // Corrected sentence row with dropdown
+      const corrRow = document.createElement('div');
+      corrRow.className = 'sentence-row';
+
+      ex.parts.forEach((part, pi) => {
+        if (pi === ex.wrongIdx) {
+          const sid = 'sel' + (selCount++);
+          corrRow.appendChild(makeDD(ex.options, ex.correct, sid));
+        } else {
+          const sp = document.createElement('span');
+          sp.className = 'txt';
+          sp.textContent = part;
+          corrRow.appendChild(sp);
+        }
+      });
+
+      div.appendChild(corrRow);
+
+      const fb = document.createElement('div');
+      fb.className = 'fb-row';
+      fb.id = 'ex6fb' + i;
+      div.appendChild(fb);
+
+      container.appendChild(div);
+    });
+  }
+
+  function updateProgress() {
+    let answered = 0;
+    for (const sid in selMap) {
+      const el = document.getElementById(sid);
+      if (el && el.value !== '') answered++;
+    }
+    const pct = (answered / TOTAL) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = answered + ' / ' + TOTAL + ' answered';
+  }
+
+  function checkAll() {
+    let score = 0;
+
+    // Check Ex5
+    ex5.forEach((ex, i) => {
+      const item = document.getElementById('ex5item' + i);
+      const fb   = document.getElementById('ex5fb'   + i);
+      let allCorrect = true;
+      let anyAnswered = false;
+
+      // Find the two selects for this item by scanning selMap keys sequentially
+      // We stored them in order, so collect the selects whose ids belong to this item
+      const itemSels = getSelectsForItem('ex5item' + i);
+      if (itemSels.length === 0) return;
+
+      itemSels.forEach((sel, bi) => {
+        if (sel.value === '') { allCorrect = false; return; }
+        anyAnswered = true;
+        sel.disabled = true;
+        if (sel.value !== ex.correct[bi]) allCorrect = false;
+      });
+
+      if (!anyAnswered) return;
+
+      if (allCorrect) {
+        score += 2;
+        item.classList.add('correct'); item.classList.remove('incorrect');
+        fb.innerHTML = '✅ Correct! — ' + ex.hint;
+      } else {
+        item.classList.add('incorrect'); item.classList.remove('correct');
+        fb.innerHTML = '❌ Correct: <em>' + ex.correct.join(' / ') + '</em> — ' + ex.hint;
+      }
+    });
+
+    // Check Ex6
+    ex6.forEach((ex, i) => {
+      const item = document.getElementById('ex6item' + i);
+      const fb   = document.getElementById('ex6fb'   + i);
+      const itemSels = getSelectsForItem('ex6item' + i);
+      if (itemSels.length === 0) return;
+      const sel = itemSels[0];
+      if (sel.value === '') return;
+      sel.disabled = true;
+
+      if (sel.value === ex.correct) {
+        score++;
+        item.classList.add('correct'); item.classList.remove('incorrect');
+        fb.innerHTML = '✅ Correct! — ' + ex.hint;
+      } else {
+        item.classList.add('incorrect'); item.classList.remove('correct');
+        fb.innerHTML = '❌ Correct: <em>"' + ex.correct + '"</em> — ' + ex.hint;
+      }
+    });
+
+    document.getElementById('checkBtn').disabled = true;
+
+    const panel = document.getElementById('resultPanel');
+    panel.classList.add('show');
+    document.getElementById('scoreText').textContent = score + '/15';
+
+    const badge = document.getElementById('resultBadge');
+    if (score >= 13) {
+      badge.textContent = '🎉 Excellent! Great command of Past Continuous.';
+      badge.className = 'result-badge badge-great';
+    } else if (score >= 9) {
+      badge.textContent = '👍 Good job! Review was/were usage.';
+      badge.className = 'result-badge badge-good';
+    } else {
+      badge.textContent = '📖 Keep practicing! Check the grammar reference below.';
+      badge.className = 'result-badge badge-try';
+    }
+  }
+
+  function getSelectsForItem(itemId) {
+    const item = document.getElementById(itemId);
+    if (!item) return [];
+    return Array.from(item.querySelectorAll('select'));
+  }
+
+  function resetAll() {
+    selCount = 0;
+    Object.keys(selMap).forEach(k => delete selMap[k]);
+    document.getElementById('checkBtn').disabled = false;
+    document.getElementById('resultPanel').classList.remove('show');
+    document.getElementById('progressBar').style.width = '0%';
+    document.getElementById('progressLabel').textContent = '0 / 15 answered';
+
+    // Clear item states
+    document.querySelectorAll('.item').forEach(el => {
+      el.classList.remove('correct','incorrect');
+    });
+
+    buildEx5();
+    buildEx6();
+  }
+
+  buildEx5();
+  buildEx6();
+</script>
+</body>
+</html>
