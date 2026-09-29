@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clasificación de la cadena de valor · Hortifrut</title>
+<style>
+:root{--navy:#24247d;--red:#ff0343;--white:#fff;--gray:#F5F5F5;--ok:#1a7f4b;--okbg:#e7f5ee;--kobg:#fff0f3;--text:#1e1e3a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--gray);color:var(--text);font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.4}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff;border-radius:14px 14px 0 0;padding:18px 24px;border-left:10px solid var(--red)}
+.brand{font-weight:800;letter-spacing:.5px;font-size:.95rem;opacity:.9}
+.brand b{color:var(--red)}
+h1{margin:6px 0 4px;font-size:1.4rem}
+header p{margin:2px 0;font-size:.95rem}
+.bar{background:#fff;padding:12px 24px;display:flex;align-items:center;gap:16px;border-bottom:1px solid #e3e3ee;flex-wrap:wrap}
+#prog{font-weight:700;color:var(--navy);white-space:nowrap}
+.track{flex:1;min-width:140px;height:10px;background:#e3e3ee;border-radius:9px;overflow:hidden}
+#fill{height:100%;width:0;background:var(--red);transition:width .4s}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.zone{background:#fff;border-radius:12px;border:3px dashed #b9b9d6;padding:12px;min-height:200px;transition:.15s}
+.zone.own{border-color:var(--navy)}
+.zone.ext{border-color:var(--red)}
+.zone.over,.zone.target{background:#fafaff;box-shadow:0 0 0 4px rgba(36,36,125,.2);transform:scale(1.01)}
+.zone.ext.over,.zone.ext.target{box-shadow:0 0 0 4px rgba(255,3,67,.25)}
+.zone h2{margin:0;font-size:1.1rem;letter-spacing:.5px}
+.own h2{color:var(--navy)}.ext h2{color:var(--red)}
+.zone small{display:block;color:#555;margin:2px 0 10px;font-size:.88rem}
+.list{display:flex;flex-direction:column;gap:8px}
+.tray{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px}
+.tray h3{margin:0 0 10px;font-size:.95rem;color:var(--navy)}
+#cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;min-height:60px}
+.card{background:#fff;border:2px solid var(--navy);border-radius:10px;padding:14px 12px;font-weight:600;cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none;box-shadow:0 2px 6px rgba(36,36,125,.15);display:flex;gap:8px;align-items:center;transition:transform .15s,box-shadow .15s}
+.card:hover{box-shadow:0 4px 12px rgba(36,36,125,.28)}
+.card::before{content:"⠿";color:#9a9ac4;font-size:1.2rem}
+.card.sel{outline:4px solid var(--red);outline-offset:2px}
+.card.lift{opacity:.35}
+.card.shake{animation:sh .4s}
+@keyframes sh{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.card.done{cursor:default;background:var(--okbg);border-color:var(--ok);color:#124d2f;box-shadow:none;touch-action:auto}
+.card.done::before{content:"✓";color:var(--ok);font-weight:900}
+.ghost{position:fixed;z-index:99;pointer-events:none;width:230px;transform:rotate(-2deg);box-shadow:0 12px 26px rgba(0,0,0,.3)}
+#fb{border-radius:10px;padding:14px 16px;min-height:56px;background:#fff;border-left:8px solid #c8c8de;font-size:.98rem}
+#fb.ok{background:var(--okbg);border-color:var(--ok)}
+#fb.ko{background:var(--kobg);border-color:var(--red)}
+#fb strong{display:block;margin-bottom:2px}
+#end{position:fixed;inset:0;background:rgba(36,36,125,.92);display:none;align-items:center;justify-content:center;padding:20px;z-index:200}
+#end.show{display:flex}
+.box{background:#fff;border-radius:16px;max-width:560px;padding:32px;text-align:center;border-top:10px solid var(--red)}
+.box h2{color:var(--navy);font-size:1.8rem;margin:0 0 12px}
+.box p{margin:0 0 20px;font-size:1.05rem}
+.btn{background:var(--navy);color:#fff;border:0;border-radius:8px;padding:10px 22px;font-size:1rem;font-weight:700;cursor:pointer}
+.btn:hover{background:var(--red)}
+footer{height:8px;background:var(--red);border-radius:0 0 14px 14px}
+@media(max-width:640px){.cols{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand">HORTI<b>FRUT</b> · Derechos humanos</div>
+  <h1>Clasifica cada elemento arrastrándolo a la categoría correspondiente</h1>
+  <p>¿Corresponde a una operación propia o a un proveedor externo? Analiza cada opción y ubícala en la columna correcta.</p>
+  <p><em>Ambas categorías forman parte de nuestra cadena de valor.</em></p>
+</header>
+<div class="bar"><span id="prog">0 de 10 elementos clasificados correctamente</span><div class="track"><div id="fill"></div></div></div>
+
+<div class="cols">
+  <section class="zone own" data-z="own" aria-label="Operación propia">
+    <h2>OPERACIÓN PROPIA</h2><small>Actividades que gestionamos directamente.</small>
+    <div class="list" id="l-own"></div>
+  </section>
+  <section class="zone ext" data-z="ext" aria-label="Proveedor externo">
+    <h2>PROVEEDOR EXTERNO</h2><small>Empresas o terceros que nos suministran bienes, servicios o mano de obra.</small>
+    <div class="list" id="l-ext"></div>
+  </section>
+</div>
+
+<div class="tray"><h3>Elementos por clasificar (arrastra cada tarjeta, o tócala y luego toca la columna)</h3><div id="cards"></div></div>
+<div id="fb" aria-live="polite">Arrastra una tarjeta hasta la columna que consideres correcta.</div>
+<footer></footer>
+</div>
+
+<div id="end" role="dialog" aria-modal="true"><div class="box">
+  <h2>¡Clasificación completada!</h2>
+  <p>Tanto las operaciones propias como los proveedores externos forman parte de nuestra cadena de valor. Identificar correctamente cada elemento nos ayuda a comprender dónde pueden existir riesgos en derechos humanos.</p>
+  <button class="btn" id="again">Reiniciar actividad</button>
+</div></div>
+
+<script>
+(function(){
+var D=[
+["Desarrollo variedad y genética","own","¡Correcto! Es el inicio de nuestra cadena de valor y está dentro del alcance de la empresa.","No es la ubicación correcta. El desarrollo de variedad y genética es una actividad propia de la empresa. Inténtalo nuevamente."],
+["Producción agrícola propia","own","¡Correcto! Son operaciones que gestionamos directamente.","Revisa tu elección. La producción agrícola propia es gestionada directamente por la empresa, por lo que corresponde a una operación propia."],
+["Plataforma comercial","own","¡Correcto! La comercialización y distribución del grupo forman parte de nuestras operaciones propias.","No es la ubicación correcta. La plataforma comercial corresponde a una operación propia de comercialización y distribución."],
+["Productor tercero","ext","¡Correcto! Produce para nosotros sin ser una operación propia. Es uno de los puntos donde puede concentrarse una parte importante del riesgo.","Revisa tu elección. El productor tercero produce para nosotros, pero no es una operación propia; corresponde a un proveedor externo."],
+["Empresa de cuadrillas de cosecha","ext","¡Correcto! Aporta mano de obra. Sus trabajadores no son nuestra plantilla, pero sí forman parte de nuestra cadena.","No es la ubicación correcta. La empresa de cuadrillas es un proveedor externo que aporta mano de obra."],
+["Proveedor de embalajes","ext","¡Correcto! Es un tercero que suministra bienes a la empresa.","Revisa tu elección. El proveedor de embalajes suministra bienes a la empresa y, por tanto, es un proveedor externo."],
+["Transporte marítimo","ext","¡Correcto! Se trata del suministro de un servicio prestado por un proveedor externo.","No es la ubicación correcta. El transporte marítimo es un servicio suministrado por un proveedor externo."],
+["Empresa de transporte de personal","ext","¡Correcto! Es un proveedor externo cuyo servicio puede tener un impacto directo sobre la seguridad de los trabajadores.","Revisa tu elección. La empresa de transporte de personal presta un servicio externo y puede tener impactos sobre la seguridad de los trabajadores."],
+["Empresa de TI","ext","¡Correcto! Es un proveedor externo de servicios, con riesgos específicos, por ejemplo, relacionados con la privacidad y protección de datos.","No es la ubicación correcta. La empresa de TI presta servicios como proveedor externo y puede implicar riesgos específicos, como los relacionados con la privacidad y protección de datos."],
+["Empresa de seguridad","ext","¡Correcto! Es un proveedor externo cuyo servicio puede tener un impacto potencial sobre trabajadores y comunidades.","Revisa tu elección. La empresa de seguridad presta un servicio externo y puede tener impactos sobre trabajadores y comunidades."]
+];
+var ORDER=[8,3,0,6,9,1,5,2,7,4]; // orden mezclado fijo
+var $=function(i){return document.getElementById(i)};
+var tray=$("cards"),fb=$("fb"),done=0,sel=null;
+
+function build(){
+  tray.innerHTML="";$("l-own").innerHTML="";$("l-ext").innerHTML="";done=0;sel=null;
+  ORDER.forEach(function(i){
+    var c=document.createElement("div");
+    c.className="card";c.textContent=D[i][0];c.dataset.i=i;c.tabIndex=0;c.setAttribute("role","button");
+    tray.appendChild(c);
+  });
+  upd();
+  fb.className="";fb.textContent="Arrastra una tarjeta hasta la columna que consideres correcta.";
+  $("end").classList.remove("show");
+}
+function upd(){
+  $("prog").textContent=done+" de 10 elementos clasificados correctamente";
+  $("fill").style.width=(done*10)+"%";
+}
+function zoneAt(x,y){
+  var e=document.elementFromPoint(x,y);
+  return e&&e.closest?e.closest(".zone"):null;
+}
+function evaluate(card,zone){
+  var d=D[card.dataset.i],z=zone.dataset.z;
+  if(z===d[1]){
+    card.className="card done";card.tabIndex=-1;card.removeAttribute("role");
+    $("l-"+z).appendChild(card);done++;upd();sel=null;
+    fb.className="ok";fb.innerHTML="<strong>"+d[0]+"</strong>"+d[2];
+    if(done===10)setTimeout(function(){$("end").classList.add("show")},900);
+  }else{
+    card.classList.remove("sel");card.classList.remove("shake");void card.offsetWidth;card.classList.add("shake");
+    sel=null;
+    fb.className="ko";fb.innerHTML="<strong>"+d[0]+"</strong>"+d[3];
+  }
+}
+function clearZ(){document.querySelectorAll(".zone").forEach(function(z){z.classList.remove("over","target")})}
+
+var drag=null;
+tray.addEventListener("pointerdown",function(e){
+  var c=e.target.closest(".card");
+  if(!c||c.classList.contains("done")||e.button>0)return;
+  e.preventDefault();
+  drag={c:c,x:e.clientX,y:e.clientY,g:null,id:e.pointerId};
+});
+window.addEventListener("pointermove",function(e){
+  if(!drag)return;
+  if(!drag.g){
+    if(Math.abs(e.clientX-drag.x)+Math.abs(e.clientY-drag.y)<8)return;
+    var g=drag.c.cloneNode(true);g.classList.add("ghost");document.body.appendChild(g);
+    drag.g=g;drag.c.classList.add("lift");
+  }
+  drag.g.style.left=(e.clientX-115)+"px";drag.g.style.top=(e.clientY-25)+"px";
+  clearZ();var z=zoneAt(e.clientX,e.clientY);if(z)z.classList.add("over");
+});
+window.addEventListener("pointerup",function(e){
+  if(!drag)return;
+  var c=drag.c,g=drag.g;drag=null;clearZ();
+  if(g){
+    g.remove();c.classList.remove("lift");
+    var z=zoneAt(e.clientX,e.clientY);
+    if(z)evaluate(c,z);
+  }else{ // clic: seleccionar
+    var was=c.classList.contains("sel");
+    document.querySelectorAll(".card.sel").forEach(function(s){s.classList.remove("sel")});
+    sel=was?null:c;if(sel){c.classList.add("sel");document.querySelectorAll(".zone").forEach(function(z){z.classList.add("target")})}
+    else clearZ();
+  }
+});
+window.addEventListener("pointercancel",function(){
+  if(drag){if(drag.g)drag.g.remove();drag.c.classList.remove("lift");drag=null;clearZ();}
+});
+document.querySelectorAll(".zone").forEach(function(z){
+  z.addEventListener("click",function(){
+    if(sel){var c=sel;c.classList.remove("sel");clearZ();evaluate(c,z);}
+  });
+});
+tray.addEventListener("keydown",function(e){
+  if((e.key==="Enter"||e.key===" ")&&e.target.classList.contains("card")){
+    e.preventDefault();var c=e.target;
+    document.querySelectorAll(".card.sel").forEach(function(s){s.classList.remove("sel")});
+    sel=c;c.classList.add("sel");
+    document.querySelectorAll(".zone").forEach(function(z){z.classList.add("target")});
+    fb.className="";fb.textContent="Tarjeta seleccionada. Haz clic en la columna donde quieres ubicarla.";
+  }
+});
+$("again").addEventListener("click",build);
+build();
+})();
+</script>
+</body>
+</html>
